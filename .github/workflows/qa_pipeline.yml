@@ -75,6 +75,13 @@ jobs:
             --self-contained-html \
             -v
 
+      - name: Report Failure / Create Task Payload (API)
+        if: failure()
+        run: |
+          echo "🚨 Обнаружены ошибки в API тестах!"
+          echo "Формирование отчета для передачи в проект на исправление..."
+          python core/report_handler.py --status failed --suite api --env "${{ env.TEST_ENV }}"
+
       - name: Upload API Test Report
         if: always()
         uses: actions/upload-artifact@v4
@@ -137,6 +144,13 @@ jobs:
               --html=reports/e2e_test_report.html \
               --self-contained-html \
               -v
+
+      - name: Report Failure / Create Task Payload (E2E)
+        if: failure()
+        run: |
+          echo "🚨 Обнаружены ошибки в мобильных E2E тестах!"
+          echo "Формирование отчета для передачи в проект (${{ env.TARGET_APP }}) на исправление..."
+          python core/report_handler.py --status failed --suite e2e --target "${{ env.TARGET_APP }}" --env "${{ env.TEST_ENV }}"
 
       - name: Upload E2E Test Report & Logs
         if: always()
